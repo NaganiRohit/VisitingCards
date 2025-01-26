@@ -1,101 +1,208 @@
-import Image from "next/image";
+"use client"
+import React, { useState } from "react";
+import html2canvas from "html2canvas"; // Import html2canvas
+import jsPDF from "jspdf"; // Import jsPDF library
 
-export default function Home() {
+const App = () => {
+  const [details, setDetails] = useState({
+    name: "",
+    position: "",
+    phone: "",
+    email: "",
+    website: "",
+    address: "",
+    logo: null,
+    backgroundImage: null,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDetails({ ...details, [name]: value });
+  };
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setDetails({ ...details, logo: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBackgroundUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setDetails({ ...details, backgroundImage: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+      <h1 className="text-2xl font-bold mb-6">Visiting Card Creator</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Form */}
+      <form className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={details.name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Name"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Position</label>
+          <input
+            type="text"
+            name="position"
+            value={details.position}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Position"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={details.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Phone Number"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={details.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Email"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Website</label>
+          <input
+            type="text"
+            name="website"
+            value={details.website}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Website"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={details.address}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded p-2"
+            placeholder="Your Address"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Company Logo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="w-full border border-gray-300 rounded p-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Background Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleBackgroundUpload}
+            className="w-full border border-gray-300 rounded p-2"
+          />
+        </div>
+      </form>
+
+      {/* Visiting Card Preview */}
+      <div
+        id="card-preview" // Assign ID for html2canvas to capture
+        className="mt-6 bg-gradient-to-r h-58 rounded-lg shadow-md w-[450px] max-w-lg"
+        style={{
+          backgroundImage: details.backgroundImage
+            ? `url(${details.backgroundImage})`
+            : "linear-gradient(to right, gray, yellow, red)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="h-full p-6 w-full rounded-md text-white flex">
+          {/* Left Section */}
+          <div className="flex-shrink-0 flex flex-col h-40 items-center justify-center w-1/3">
+          {details.logo && (
+  <img
+    src={details.logo}
+    alt="Company Logo"
+    className="h-20 w-20 object-cover rounded-full"
+    style={{
+      objectFit: "cover", // Ensures the logo maintains its aspect ratio
+      borderRadius: "50%", // Ensures the logo is circular
+    }}
+  />
+)}
+
+            <div className="mt-2">
+              <h2 className="text-xl font-bold text-slate-100 bg-zinc-900 p-1 rounded-sm">
+                {details.name || "Your Name"}
+              </h2>
+            </div>
+          </div>
+
+        {/* Right Section */}
+<div className="flex justify-end flex-grow">
+  <div className="text-sm flex flex-col justify-end space-y-1">
+    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
+      🏠 {details.address || "Your Address"}
+    </p>
+    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
+      📞 <a href={`tel:${details.phone}`} >{details.phone || "Phone Number"}</a>
+    </p>
+    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
+      ✉️ <a href={`mailto:${details.email}`}>{details.email || "Email Address"}</a>
+    </p>
+    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
+      🌐 <a href={details.website ? details.website : "#"} target="_blank" rel="noopener noreferrer">
+        {details.website || "Website"}
+      </a>
+    </p>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      {/* Button to Download as Image */}
+      <button
+  onClick={downloadAsPDF}
+  className="mt-6 bg-blue-500 text-white py-2 px-4 rounded"
+>
+  Download as PDF
+</button>
+
     </div>
   );
-}
+};
+
+export default App;
+// visiting card website link or email or phon number ko clickeble banao input types me changese karke ya fir website ki link me link ya a tag ka use karke apane hisab se karke only naya code do
