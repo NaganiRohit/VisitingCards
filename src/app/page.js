@@ -1,7 +1,5 @@
-"use client"
+"use client";
 import React, { useState } from "react";
-import html2canvas from "html2canvas"; // Import html2canvas
-import jsPDF from "jspdf"; // Import jsPDF library
 
 const App = () => {
   const [details, setDetails] = useState({
@@ -41,7 +39,6 @@ const App = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
@@ -150,17 +147,17 @@ const App = () => {
         <div className="h-full p-6 w-full rounded-md text-white flex">
           {/* Left Section */}
           <div className="flex-shrink-0 flex flex-col h-40 items-center justify-center w-1/3">
-          {details.logo && (
-  <img
-    src={details.logo}
-    alt="Company Logo"
-    className="h-20 w-20 object-cover rounded-full"
-    style={{
-      objectFit: "cover", // Ensures the logo maintains its aspect ratio
-      borderRadius: "50%", // Ensures the logo is circular
-    }}
-  />
-)}
+            {details.logo && (
+              <img
+                src={details.logo}
+                alt="Company Logo"
+                className="h-20 w-20 object-cover rounded-full"
+                style={{
+                  objectFit: "cover", // Ensures the logo maintains its aspect ratio
+                  borderRadius: "50%", // Ensures the logo is circular
+                }}
+              />
+            )}
 
             <div className="mt-2">
               <h2 className="text-xl font-bold text-slate-100 bg-zinc-900 p-1 rounded-sm">
@@ -169,40 +166,36 @@ const App = () => {
             </div>
           </div>
 
-        {/* Right Section */}
-<div className="flex justify-end flex-grow">
-  <div className="text-sm flex flex-col justify-end space-y-1">
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      🏠 {details.address || "Your Address"}
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      📞 <a href={`tel:${details.phone}`} >{details.phone || "Phone Number"}</a>
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      ✉️ <a href={`mailto:${details.email}`}>{details.email || "Email Address"}</a>
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      🌐 <a href={details.website ? details.website : "#"} target="_blank" rel="noopener noreferrer">
-        {details.website || "Website"}
-      </a>
-    </p>
-  </div>
-</div>
-
+          {/* Right Section */}
+          <div className="flex justify-end flex-grow">
+            <div className="text-sm flex flex-col justify-end space-y-1">
+              <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm">
+                🏠 {details.address || "Your Address"}
+              </p>
+              <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm">
+                📞{" "}
+                <a href={`tel:${details.phone}`}>{details.phone || "Phone Number"}</a>
+              </p>
+              <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm">
+                ✉️{" "}
+                <a href={`mailto:${details.email}`}>{details.email || "Email Address"}</a>
+              </p>
+              <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm">
+                🌐{" "}
+                <a
+                  href={details.website ? details.website : "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {details.website || "Website"}
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Button to Download as Image */}
-      <button
-  onClick={downloadAsPDF}
-  className="mt-6 bg-blue-500 text-white py-2 px-4 rounded"
->
-  Download as PDF
-</button>
-
     </div>
   );
 };
 
 export default App;
-// visiting card website link or email or phon number ko clickeble banao input types me changese karke ya fir website ki link me link ya a tag ka use karke apane hisab se karke only naya code do
