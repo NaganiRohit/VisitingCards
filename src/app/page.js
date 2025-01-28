@@ -1,18 +1,18 @@
-"use client"
+"use client";
 import React, { useState } from "react";
-import html2canvas from "html2canvas"; // Import html2canvas
-import jsPDF from "jspdf"; // Import jsPDF library
+import { jsPDF } from "jspdf";
+import { IoCloudUploadSharp } from "react-icons/io5";
 
 const App = () => {
   const [details, setDetails] = useState({
     name: "",
-    position: "",
     phone: "",
     email: "",
     website: "",
     address: "",
     logo: null,
     backgroundImage: null,
+    selectTextColor: "#000000", // Default text color (black)
   });
 
   const handleChange = (e) => {
@@ -42,167 +42,189 @@ const App = () => {
     }
   };
 
+  const generatePDF = () => {
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: [400, 200], // Custom size for visiting card
+    });
+
+    // Add background image if provided
+    if (details.backgroundImage) {
+      pdf.addImage(details.backgroundImage, "JPEG", 0, 0, 450, 200);
+    } else {
+      // Add a gradient background as fallback
+      pdf.setFillColor(200, 200, 200);
+      pdf.rect(0, 0, 450, 200, "F");
+    }
+
+    // Add logo if provided
+    if (details.logo) {
+      pdf.addImage(details.logo, "PNG", 20, 20, 60, 60); // Logo dimensions and position
+    }
+
+    // Convert the selected text color from hex to RGB
+    const hexColor = details.selectTextColor || "#000000";
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+
+    // Add text content with dynamic text color
+    pdf.setTextColor(r, g, b); // Set dynamic text color
+    pdf.setFontSize(16);
+    pdf.text(details.name || "Company Name", 20, 100);
+    pdf.setFontSize(12);
+    pdf.text(details.phone ? `${details.phone}` : "Company Phone", 270, 120);
+    pdf.text(details.email ? `${details.email}` : "Company Email", 270, 140);
+    pdf.text(details.website ? `${details.website}` : "Company Website", 270, 160);
+    pdf.text(details.address ? `${details.address}` : "Company Address", 270, 180);
+
+    // Save the PDF
+    pdf.save("visiting-card.pdf");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-      <h1 className="text-2xl font-bold mb-6">Visiting Card Creator</h1>
+    <div className="min-h-screen bg-gray-900 flex flex-col items-center p-4">
+      <h1 className="text-2xl font-bold mb-6 text-white">Visiting Card Creator</h1>
 
       {/* Form */}
-      <form className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={details.name}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Name"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Position</label>
-          <input
-            type="text"
-            name="position"
-            value={details.position}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Position"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Phone</label>
-          <input
-            type="text"
-            name="phone"
-            value={details.phone}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Phone Number"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={details.email}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Email"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Website</label>
-          <input
-            type="text"
-            name="website"
-            value={details.website}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Website"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={details.address}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded p-2"
-            placeholder="Your Address"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Company Logo</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleLogoUpload}
-            className="w-full border border-gray-300 rounded p-2"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Background Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleBackgroundUpload}
-            className="w-full border border-gray-300 rounded p-2"
-          />
-        </div>
-      </form>
-
-      {/* Visiting Card Preview */}
-      <div
-        id="card-preview" // Assign ID for html2canvas to capture
-        className="mt-6 bg-gradient-to-r h-58 rounded-lg shadow-md w-[450px] max-w-lg"
+      <form
+        className={`text-black flex flex-col p-6 rounded-lg shadow-md w-full max-w-2xl items-end relative`}
         style={{
           backgroundImage: details.backgroundImage
             ? `url(${details.backgroundImage})`
-            : "linear-gradient(to right, gray, yellow, red)",
+            : "none",
+          backgroundColor: details.backgroundImage ? "transparent" : "#94a3b8",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="h-full p-6 w-full rounded-md text-white flex">
-          {/* Left Section */}
-          <div className="flex-shrink-0 flex flex-col h-40 items-center justify-center w-1/3">
-          {details.logo && (
-  <img
-    src={details.logo}
-    alt="Company Logo"
-    className="h-20 w-20 object-cover rounded-full"
-    style={{
-      objectFit: "cover", // Ensures the logo maintains its aspect ratio
-      borderRadius: "50%", // Ensures the logo is circular
-    }}
-  />
-)}
-
-            <div className="mt-2">
-              <h2 className="text-xl font-bold text-slate-100 bg-zinc-900 p-1 rounded-sm">
-                {details.name || "Your Name"}
-              </h2>
-            </div>
+        <div className="flex flex-col gap-2  h-[250px] justify-end">
+          <div>
+            <input
+              type="text"
+              name="name"
+              value={details.name}
+              onChange={handleChange}
+              className="w-50 border border-gray-300 rounded px-2 py-1"
+              placeholder="Company Name"
+              
+            />
           </div>
 
-        {/* Right Section */}
-<div className="flex justify-end flex-grow">
-  <div className="text-sm flex flex-col justify-end space-y-1">
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      🏠 {details.address || "Your Address"}
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      📞 <a href={`tel:${details.phone}`} >{details.phone || "Phone Number"}</a>
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      ✉️ <a href={`mailto:${details.email}`}>{details.email || "Email Address"}</a>
-    </p>
-    <p className="text-slate-100 bg-zinc-900 p-1 rounded-sm  ">
-      🌐 <a href={details.website ? details.website : "#"} target="_blank" rel="noopener noreferrer">
-        {details.website || "Website"}
-      </a>
-    </p>
-  </div>
-</div>
+          <div>
+            <input
+              type="text"
+              name="phone"
+              value={details.phone}
+              onChange={handleChange}
+              className="w-50 border border-gray-300 rounded px-2 py-1"
+              placeholder="Company Phone Number"
+            />
+          </div>
 
+          <div>
+            <input
+              type="email"
+              name="email"
+              value={details.email}
+              onChange={handleChange}
+              className="w-50 border border-gray-300 rounded px-2 py-1"
+              placeholder="Company Email"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="website"
+              value={details.website}
+              onChange={handleChange}
+              className="w-50 border border-gray-300 rounded px-2 py-1"
+              placeholder="Company Website"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="address"
+              value={details.address}
+              onChange={handleChange}
+              className="w-50 border border-gray-300 rounded px-2 py-1"
+              placeholder="Company Address"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Button to Download as Image */}
+        {/* Logo Upload */}
+        <div>
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+          />
+          <label
+            htmlFor="fileInput"
+            className="absolute top-10 w-20 h-20 left-10 rounded-sm flex justify-center items-center cursor-pointer"
+            style={{
+              backgroundImage: details.logo ? `url(${details.logo})` : "none",
+              backgroundColor: details.logo ? "transparent" : "#cbd5e1",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {!details.logo && <IoCloudUploadSharp className="text-5xl text-blue-700" />}
+          </label>
+          <p className="mt-2 absolute top-[33%] left-[4%] text-gray-200">Company Logo</p>
+        </div>
+
+        {/* Background Image Upload */}
+        <div>
+          <input
+            id="BgFileInput"
+            type="file"
+            accept="image/*"
+            onChange={handleBackgroundUpload}
+            className="hidden"
+          />
+          <label
+            htmlFor="BgFileInput"
+            className="absolute top-[44%] left-[40%] w-28 h-20 rounded-sm flex justify-center items-center cursor-pointer"
+            style={{
+              backgroundColor: "#cbd5e1",
+            }}
+          >
+            <IoCloudUploadSharp className="text-5xl text-blue-700" />
+          </label>
+          <p className="mt-2 absolute top-[65%] left-[38%] text-gray-200">Background Image</p>
+        </div>
+
+        {/* Text Color Selector */}
+        <div className="mt-4">
+          <label htmlFor="textColor" className="text-gray-200 mr-2">
+            Text Color:
+          </label>
+          <input
+            type="color"
+            id="textColor"
+            name="selectTextColor"
+            value={details.selectTextColor}
+            onChange={handleChange}
+          />
+        </div>
+      </form>
+
       <button
-  onClick={downloadAsPDF}
-  className="mt-6 bg-blue-500 text-white py-2 px-4 rounded"
->
-  Download as PDF
-</button>
-
+        onClick={generatePDF}
+        className="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Download PDF
+      </button>
     </div>
   );
 };
 
 export default App;
-// visiting card website link or email or phon number ko clickeble banao input types me changese karke ya fir website ki link me link ya a tag ka use karke apane hisab se karke only naya code do
